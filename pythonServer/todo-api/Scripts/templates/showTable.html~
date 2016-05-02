@@ -1,0 +1,19 @@
+
+<table border="1">
+	
+	<!-- show the field name-->
+	{%- if rows|length >0 %}
+		<span>Number of rows: {{rows|length}}</span>
+	  {%- for col in row: %}
+	    <td>{{col}}</td>
+  	{%- endfor %}
+	{%- endif %}
+	<!-- show the data-->
+ {%- for row in rows %}
+  <tr>
+{%- for col in row: %}
+	<td>{{row[ col ]}}</td>
+{%- endfor %}
+  </tr>
+ {%- endfor %}
+</table>
