@@ -127,4 +127,4 @@ rooDir='C:/Download/lab/python/todo-api'
 sslinfo = (rooDir+'/server.crt',rooDir+'/server.key')
                                                                                                     
 if __name__ == '__main__':
-    app.run(debug=True,port=443, ssl_context=(rooDir+'/server.crt',rooDir+'/server.key') )
+    app.run(debug=True,host='0.0.0.0',port=443, ssl_context=(rooDir+'/server.crt',rooDir+'/server.key') )

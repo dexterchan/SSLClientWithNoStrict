@@ -47,6 +47,10 @@ def get_password(username):
 def unauthorized():
     return make_response(jsonify({'error': 'Unauthorized access'}), 401)
 
+@app.errorhandler(401)
+def not_inserttask(error):
+    return make_response(jsonify({'error': 'fail task insert'}), 401)
+    
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
@@ -94,6 +98,12 @@ def create_task():
     tasks.append(task)
     return jsonify({'task': task}), 201
 
+@app.route('/todo/api/v1.0/failtasks', methods=['POST'])
+def create_failtask():
+    abort (401)
+    
+    return jsonify({'error': 'notask'}), 201
+
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
 #@auth.login_required
 def get_task(task_id):
@@ -127,4 +137,4 @@ rooDir='C:/Download/lab/python/todo-api'
 sslinfo = (rooDir+'/server.crt',rooDir+'/server.key')
                                                                                                     
 if __name__ == '__main__':
-    app.run(debug=True,port=443, ssl_context=(rooDir+'/server.crt',rooDir+'/server.key') )
+    app.run(debug=True,host='0.0.0.0',port=443, ssl_context=(rooDir+'/server.crt',rooDir+'/server.key') )

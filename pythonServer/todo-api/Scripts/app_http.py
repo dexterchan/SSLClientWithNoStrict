@@ -10,6 +10,7 @@ from flask import url_for
 from flask.ext.httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 import uuid
+from Model.heroes import *
 
 #Testing with curl:
 #curl -i -u miguel:python -H "Content-Type: application/json"  http://localhost:5000/todo/api/v1.0/tasks
@@ -155,7 +156,18 @@ def make_public_task(task):
             new_task[field] = task[field]
     return new_task
 
+import json
+# get this object
+from flask import Response
+@app.route('/heroes', methods=['GET'])
+def get_heros():
+    #return jsonify({'tasks': tasks})
+    #return jsonify( {'result': heroes}  )
+    return Response(json.dumps(heroes),  mimetype='application/json')
 
+@app.route('/heroMain', methods=['GET'])
+def get_htmlheroMain():
+    return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True,port=8080)
+    app.run(debug=True,host='0.0.0.0',port=8080)

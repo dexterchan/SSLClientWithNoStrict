@@ -127,4 +127,4 @@ def make_public_task(task):
 sslinfo = ('C:/Download/lab/todo-api/flask/server.crt','C:/Download/lab/todo-api/flask/server.key')
 
 if __name__ == '__main__':
-    app.run(debug=True,port=443, ssl_context=('C:/Download/lab/todo-api/flask/server.crt','C:/Download/lab/todo-api/flask/server.key') )
+    app.run(debug=True,host='0.0.0.0',port=443, ssl_context=('C:/Download/lab/todo-api/flask/server.crt','C:/Download/lab/todo-api/flask/server.key') )
