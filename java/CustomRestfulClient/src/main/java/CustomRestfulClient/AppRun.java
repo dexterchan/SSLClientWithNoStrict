@@ -27,9 +27,7 @@ public class AppRun {
 //        System.exit(i);
         
 		//Testing
-		ApplicationContext context = new ClassPathXmlApplicationContext("SpringAppContext.xml");
-
-		WebActionTemplate todo = (WebActionTemplate)context.getBean("ToDoWebActionTemplate");
+		
     	
 		
         ConfigurableApplicationContext ctx = SpringApplication.run(AppRun.class, args);
@@ -134,6 +132,10 @@ public class AppRun {
 			}
 		}
 		
+		//Further parameterized the input 
+		Map<String,String> h=null;
+		RestfulClient cl=RestfulClient.getInstance();
+		RestfulClient.ClientReturn ret=null;
 		if(this.myMode==MODE.FREE){
 			if(!checkEnv){
 				throw new Exception("No argument -ENV_VAR defined");
@@ -144,20 +146,73 @@ public class AppRun {
 			if(!checkURL){
 				throw new Exception("No argument -URL defined");
 			}
+			h = prepareEnvInputFromString(strEnvVar);
+			ret=cl.connectServer(URL, h,Mode,maxTry);
+			System.out.println(ret.getResponse());
 		}else{
 			if(!checkEnv){
 				throw new Exception("Template action is incomplete");
 			}
+			
+			ApplicationContext context = new ClassPathXmlApplicationContext("SpringAppContext.xml");
+			this.myTemplate = (WebActionTemplate)context.getBean(templateFile);
+			h = prepareEnvInputFromWebActionTemplate(this.myTemplate,Action);
+			
+			WebAction webaction=myTemplate.actionWebLink.get(Action);
+	    	if(webaction==null){
+	    		throw new Exception("Not action defined");
+	    	}
+			
+			maxTry = this.myTemplate.getMaxTryEachServer();
+			int SecondaryInstance=0;
+			boolean primaryFail=false;
+			boolean runContinue=true;
+			
+			while(runContinue && SecondaryInstance<this.myTemplate.getSecondaryHostPort().size()){
+				try{
+					if(!primaryFail){
+						URL=this.myTemplate.getPrimaryHostPort()+webaction.getWebLink();
+						ret=cl.connectServer(URL, h,webaction.getHttpMethod(),maxTry);
+						System.out.println(ret.getResponse());
+						runContinue=false;
+					}else{
+						URL=this.myTemplate.getSecondaryHostPort().get(SecondaryInstance)+webaction.getWebLink();
+						ret=cl.connectServer(URL, h,webaction.getHttpMethod(),maxTry);
+						System.out.println(ret.getResponse());
+						runContinue=false;
+					}
+					
+				}catch(Exception e){
+					if(primaryFail){
+						SecondaryInstance++;
+					}else{
+						primaryFail=true;
+					}
+				}
+			}
+			
 		}
-		//Further parameterized the input 
-		Map<String,String> h = prepareEnvInputFromString(strEnvVar);
-		RestfulClient cl=RestfulClient.getInstance();
-		
-		RestfulClient.ClientReturn ret=cl.connectServer(URL, h,Mode,maxTry);
-		System.out.println(ret.getResponse());
-		//System.exit( ret.getStatus() );
-		return ret.getStatus();
+		if(ret!=null){
+			return ret.getStatus();
+		}else return -1;
 	}
+    
+    Map<String,String> prepareEnvInputFromWebActionTemplate(WebActionTemplate template,String action)throws Exception{
+    	HashMap<String,String> h = new HashMap<String,String>();
+    	WebAction webaction=template.actionWebLink.get(action);
+    	if(webaction==null){
+    		throw new Exception("Not action defined");
+    	}
+    	
+		for(String k : webaction.getJsonParaFromEnv()){
+			String kl = k.trim();
+			String value = System.getenv(kl);
+			if(value!=null){
+				h.put(kl, value);
+			}
+		}
+		return h;
+    }
     
     Map<String,String> prepareEnvInputFromString(String strEnvVar){
     	HashMap<String,String> h = new HashMap<String,String>();

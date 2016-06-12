@@ -6,12 +6,12 @@ import java.util.Map;
 public class WebActionTemplate {
 	String primaryHostPort;
 	
-	List secondaryHostPort;
+	List<String> secondaryHostPort;
 	
 	Map<String,WebAction> actionWebLink;
 	
 	int maxTryEachServer;
-	int minTrySwitch2Secondary;
+	
 	
 	public String getPrimaryHostPort() {
 		return primaryHostPort;
@@ -21,13 +21,11 @@ public class WebActionTemplate {
 		this.primaryHostPort = primaryHostPort;
 	}
 
-	
-
-	public List getSecondaryHostPort() {
+	public List<String> getSecondaryHostPort() {
 		return secondaryHostPort;
 	}
 
-	public void setSecondaryHostPort(List secondaryHostPort) {
+	public void setSecondaryHostPort(List<String> secondaryHostPort) {
 		this.secondaryHostPort = secondaryHostPort;
 	}
 
@@ -47,13 +45,7 @@ public class WebActionTemplate {
 		this.maxTryEachServer = maxTryEachServer;
 	}
 
-	public int getMinTrySwitch2Secondary() {
-		return minTrySwitch2Secondary;
-	}
-
-	public void setMinTrySwitch2Secondary(int minTrySwitch2Secondary) {
-		this.minTrySwitch2Secondary = minTrySwitch2Secondary;
-	}
+	
 	
 	
 }

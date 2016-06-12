@@ -26,11 +26,11 @@
 	<bean id="ToDoWebActionTemplate" name="WebActionTemplate"
 		class="CustomRestfulClient.WebActionTemplate">
 		<property name="maxTryEachServer" value="3"/>
-		<property name="minTrySwitch2Secondary" value="3"/>
-		<property name="primaryHostPort" value="localhost:443"></property>
+		
+		<property name="primaryHostPort" value="https://localhost:443"></property>
 		<property name="secondaryHostPort">
 			<list>
-            	<value>"127.0.0.1:443"</value>
+            	<value>https://127.0.0.1:443</value>
          	</list>
 		</property>
 		<property name="actionWebLink">
@@ -41,8 +41,8 @@
 							<property name="webLink" value="/todo/api/v1.0/tasks" />
 							<property name="jsonParaFromEnv">
 								<list>
-					            	<value>"title"</value>
-					            	<value>"description"</value>
+					            	<value>title</value>
+					            	<value>description</value>
 					         	</list>
 							</property>
 						</bean>

@@ -6,7 +6,7 @@ public class WebAction {
 	String httpMethod;
 	String webLink;
 	
-	List jsonParaFromEnv;
+	List<String> jsonParaFromEnv;
 	
 	public String getHttpMethod() {
 		return httpMethod;
@@ -20,11 +20,12 @@ public class WebAction {
 	public void setWebLink(String webLink) {
 		this.webLink = webLink;
 	}
-	public List getJsonParaFromEnv() {
+	public List<String> getJsonParaFromEnv() {
 		return jsonParaFromEnv;
 	}
-	public void setJsonParaFromEnv(List jsonParaFromEnv) {
+	public void setJsonParaFromEnv(List<String> jsonParaFromEnv) {
 		this.jsonParaFromEnv = jsonParaFromEnv;
 	}
+	
 	
 }
