@@ -6,8 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 @EnableAutoConfiguration
@@ -21,6 +23,12 @@ public class AppRun {
 //        int i= r.run(args);
 //        System.exit(i);
         
+		//Testing
+		ApplicationContext context = new ClassPathXmlApplicationContext("SpringAppContext.xml");
+
+		WebActionTemplate todo = (WebActionTemplate)context.getBean("ToDoWebActionTemplate");
+    	
+		
         ConfigurableApplicationContext ctx = SpringApplication.run(AppRun.class, args);
         
         AppRun mainObj = ctx.getBean(AppRun.class);
