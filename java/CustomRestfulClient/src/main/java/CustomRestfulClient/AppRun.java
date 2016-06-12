@@ -4,16 +4,28 @@ import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
-
+@EnableAutoConfiguration
+@Component
+@ComponentScan
 public class AppRun {
 	private static final Logger log = LoggerFactory.getLogger(AppRun.class);
 	
 	public static void main(String args[]) throws Exception{
-		AppRun r = new AppRun();
-        int i= r.run(args);
+//		AppRun r = new AppRun();
+//        int i= r.run(args);
+//        System.exit(i);
+        
+        ConfigurableApplicationContext ctx = SpringApplication.run(AppRun.class, args);
+        
+        AppRun mainObj = ctx.getBean(AppRun.class);
+
+        int i= mainObj.run(args);
         System.exit(i);
     }
 	
@@ -107,6 +119,7 @@ public class AppRun {
 		
 		RestfulClient.ClientReturn ret=cl.connectServer(URL, h,Mode,maxTry);
 		System.out.println(ret.getResponse());
+		//System.exit( ret.getStatus() );
 		return ret.getStatus();
 	}
 }
