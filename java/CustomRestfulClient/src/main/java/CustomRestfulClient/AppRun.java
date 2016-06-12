@@ -1,6 +1,7 @@
 package CustomRestfulClient;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Component;
 @ComponentScan
 public class AppRun {
 	private static final Logger log = LoggerFactory.getLogger(AppRun.class);
-	
+	enum MODE{FREE, TEMPLATE};
+	MODE myMode;
+	WebActionTemplate myTemplate=null;
 	public static void main(String args[]) throws Exception{
 //		AppRun r = new AppRun();
 //        int i= r.run(args);
@@ -39,6 +42,7 @@ public class AppRun {
 	
 	
     public int run(String args[]) throws Exception {
+    	this.myMode = MODE.FREE;
 		//Read the argument
 		boolean checkEnv=false;
 		boolean checkMode=false;
@@ -46,9 +50,30 @@ public class AppRun {
 		String strEnvVar="";
 		String Mode="";
 		String URL="";
+		String templateFile="";
+		String Action="";
 		int maxTry=10;
 		for ( int i=0;i<args.length;i++){
-			if(args[i].equals("-ENV_VAR")){
+			if(args[i].equals("-RUNTEMPL")){
+				if(i<args.length-1){
+					templateFile=args[i+1];
+					checkEnv=true;
+					i++;
+					log.info("Use TemplateFile:"+templateFile);
+					myMode = MODE.TEMPLATE;
+				}else{
+					checkEnv=false;
+				}
+			}else if(args[i].equals("-ACTION")){
+				if(i<args.length-1){
+					Action=args[i+1];
+					checkEnv=true;
+					i++;
+					log.info("Action:"+Action);
+				}else{
+					checkEnv=false;
+				}
+			}else if(args[i].equals("-ENV_VAR")){
 				if(i<args.length-1){
 					strEnvVar=args[i+1];
 					checkEnv=true;
@@ -95,26 +120,47 @@ public class AppRun {
 				}
 			}else if(args[i].equals("-H")){
 				System.out.println("A Restful client to send request by JSON");
+				System.out.println("Free Mode");
 				System.out.println("-URL : URL");
 				System.out.println("-ENV_VAR : SYSTEM varialble to contain value to form JSON requestm, example: TITLE,DESCRIPTION");
 				System.out.println("Tool will search env variable of TITLE and DESCRIPTION from env variable and form JSON");
 				System.out.println("-MODE : GET,POST,PUT,DELETE");
 				System.out.println("-MAXTRY : MAX TRY before failure, default = 10");
 				System.out.println("-H : HELP for this screen");
+				System.out.println("Template Mode");
+				System.out.println("-RUNTEMPL <action template defined in Spring App Context>");
+				System.out.println("-ACTION <action in tempalte>");
 				return -1;
 			}
 		}
-		if(!checkEnv){
-			throw new Exception("No argument -ENV_VAR defined");
-		}
-		if(!checkMode){
-			throw new Exception("No argument -MODE defined");
-		}
-		if(!checkURL){
-			throw new Exception("No argument -URL defined");
+		
+		if(this.myMode==MODE.FREE){
+			if(!checkEnv){
+				throw new Exception("No argument -ENV_VAR defined");
+			}
+			if(!checkMode){
+				throw new Exception("No argument -MODE defined");
+			}
+			if(!checkURL){
+				throw new Exception("No argument -URL defined");
+			}
+		}else{
+			if(!checkEnv){
+				throw new Exception("Template action is incomplete");
+			}
 		}
 		//Further parameterized the input 
-		HashMap<String,String> h = new HashMap<String,String>();
+		Map<String,String> h = prepareEnvInputFromString(strEnvVar);
+		RestfulClient cl=RestfulClient.getInstance();
+		
+		RestfulClient.ClientReturn ret=cl.connectServer(URL, h,Mode,maxTry);
+		System.out.println(ret.getResponse());
+		//System.exit( ret.getStatus() );
+		return ret.getStatus();
+	}
+    
+    Map<String,String> prepareEnvInputFromString(String strEnvVar){
+    	HashMap<String,String> h = new HashMap<String,String>();
 		String[] keylst = strEnvVar.split(",");
 		for(String k : keylst){
 			String kl = k.trim();
@@ -123,11 +169,6 @@ public class AppRun {
 				h.put(kl, value);
 			}
 		}
-		RestfulClient cl=RestfulClient.getInstance();
-		
-		RestfulClient.ClientReturn ret=cl.connectServer(URL, h,Mode,maxTry);
-		System.out.println(ret.getResponse());
-		//System.exit( ret.getStatus() );
-		return ret.getStatus();
-	}
+		return h;
+    }
 }
